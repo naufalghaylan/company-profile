@@ -12,7 +12,8 @@
     --card-foreground: oklch(0.145 0 0);
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
+    /* Set primary to blue used in Navbar: bg-blue-600 = #2563eb, oklch(0.56 0.19 259) */
+    --primary: oklch(0.56 0.19 259);
     --primary-foreground: oklch(0.985 0 0);
     --secondary: oklch(0.97 0 0);
     --secondary-foreground: oklch(0.205 0 0);
@@ -47,8 +48,9 @@
     --card-foreground: oklch(0.985 0 0);
     --popover: oklch(0.205 0 0);
     --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.87 0.00 0);
-    --primary-foreground: oklch(0.205 0 0);
+    /* Set primary to blue for dark mode: bg-blue-600 = #2563eb, oklch(0.56 0.19 259) */
+    --primary: oklch(0.56 0.19 259);
+    --primary-foreground: oklch(0.985 0 0);
     --secondary: oklch(0.269 0 0);
     --secondary-foreground: oklch(0.985 0 0);
     --muted: oklch(0.269 0 0);
@@ -126,4 +128,12 @@
   html {
     @apply font-sans;
     }
+}
+
+.testimonials-track {
+  --testimonials-gap: 1.5rem;
+  display: flex;
+  width: max-content;
+  gap: var(--testimonials-gap);
+  will-change: transform;
 }
