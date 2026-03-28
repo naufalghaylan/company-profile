@@ -3,6 +3,7 @@ import { Menu } from "lucide-react"
 import { NavLink, Link } from "react-router-dom"
 import { navigation } from "@/app/navigations"
 import { useAuthStore } from "@/features/auth/store/authStore"
+import techflowLogo from "@/assets/techflowlogo.svg"
 
 import {
   Sheet,
@@ -50,8 +51,12 @@ export default function MobileMenu() {
           <div className="flex items-center justify-between px-6 py-5 border-b">
 
             <Link to="/" className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white font-bold">
-                T
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted p-1">
+                <img
+                  src={techflowLogo}
+                  alt="TechFlow logo"
+                  className="h-full w-full rounded-lg object-contain"
+                />
               </div>
 
               <div className="leading-tight">

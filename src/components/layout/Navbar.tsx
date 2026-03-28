@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import MobileMenu from "./MobileMenu"
 import { useState, useEffect } from "react"
 import { useAuthStore } from "@/features/auth/store/authStore"
+import techflowLogo from "@/assets/techflowlogo.svg"
 
 export default function Navbar() {
 
@@ -52,8 +53,12 @@ export default function Navbar() {
 
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white font-bold shadow-md transition-all duration-200 group-hover:shadow-[0_2px_8px_0_theme(colors.primary)/40]">
-              T
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted p-1 shadow-md transition-all duration-200 group-hover:shadow-[0_2px_8px_0_theme(colors.primary)/40]">
+              <img
+                src={techflowLogo}
+                alt="TechFlow logo"
+                className="h-full w-full rounded-lg object-contain"
+              />
             </div>
 
             <div className="leading-tight">
