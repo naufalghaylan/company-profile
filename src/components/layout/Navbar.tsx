@@ -17,13 +17,30 @@ export default function Navbar() {
   const refreshUser = useAuthStore((state) => state.refreshUser)
 
   useEffect(() => {
+    let frameId = 0
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10)
+      if (frameId !== 0) {
+        return
+      }
+
+      frameId = window.requestAnimationFrame(() => {
+        frameId = 0
+        const nextIsScrolled = window.scrollY > 10
+        setIsScrolled((prev) => (prev === nextIsScrolled ? prev : nextIsScrolled))
+      })
     }
 
-    window.addEventListener("scroll", handleScroll)
+    handleScroll()
+    window.addEventListener("scroll", handleScroll, { passive: true })
 
-    return () => window.removeEventListener("scroll", handleScroll)
+    return () => {
+      if (frameId !== 0) {
+        window.cancelAnimationFrame(frameId)
+      }
+
+      window.removeEventListener("scroll", handleScroll)
+    }
   }, [])
 
   useEffect(() => {

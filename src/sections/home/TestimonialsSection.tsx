@@ -112,11 +112,13 @@ export default function TestimonialsSection() {
     let resumeTimer: number | null = null
     const speedPxPerSecond = 28
 
-    const getLoopWidth = () => scroller.scrollWidth / 2
+    let loopWidth = scroller.scrollWidth / 2
+
+    const recalculateLoopWidth = () => {
+      loopWidth = scroller.scrollWidth / 2
+    }
 
     const keepInLoopRange = () => {
-      const loopWidth = getLoopWidth()
-
       if (loopWidth <= 0) {
         return
       }
@@ -156,6 +158,7 @@ export default function TestimonialsSection() {
 
     frameId = window.requestAnimationFrame(tick)
 
+    window.addEventListener("resize", recalculateLoopWidth)
     scroller.addEventListener("pointerdown", pauseTemporarily)
     scroller.addEventListener("touchstart", pauseTemporarily, { passive: true })
     scroller.addEventListener("scroll", keepInLoopRange, { passive: true })
@@ -167,6 +170,7 @@ export default function TestimonialsSection() {
         window.clearTimeout(resumeTimer)
       }
 
+      window.removeEventListener("resize", recalculateLoopWidth)
       scroller.removeEventListener("pointerdown", pauseTemporarily)
       scroller.removeEventListener("touchstart", pauseTemporarily)
       scroller.removeEventListener("scroll", keepInLoopRange)
@@ -200,7 +204,13 @@ export default function TestimonialsSection() {
     const leftSpeedPxPerSecond = 24
     const rightSpeedPxPerSecond = 20
 
-    const getLoopWidth = (element: HTMLDivElement) => element.scrollWidth / 2
+    let leftLoopWidth = leftRow.scrollWidth / 2
+    let rightLoopWidth = rightRow.scrollWidth / 2
+
+    const recalculateLoopWidths = () => {
+      leftLoopWidth = leftRow.scrollWidth / 2
+      rightLoopWidth = rightRow.scrollWidth / 2
+    }
 
     const handlePointerEnter = () => {
       isPaused = true
@@ -219,9 +229,6 @@ export default function TestimonialsSection() {
       lastTime = timestamp
 
       if (!isPaused) {
-        const leftLoopWidth = getLoopWidth(leftRow)
-        const rightLoopWidth = getLoopWidth(rightRow)
-
         if (leftLoopWidth > 0) {
           leftOffset = (leftOffset + leftSpeedPxPerSecond * delta) % leftLoopWidth
           leftRow.style.transform = `translate3d(${-leftOffset}px, 0, 0)`
@@ -238,11 +245,13 @@ export default function TestimonialsSection() {
 
     frameId = window.requestAnimationFrame(tick)
 
+    window.addEventListener("resize", recalculateLoopWidths)
     marquee.addEventListener("pointerenter", handlePointerEnter)
     marquee.addEventListener("pointerleave", handlePointerLeave)
 
     return () => {
       window.cancelAnimationFrame(frameId)
+      window.removeEventListener("resize", recalculateLoopWidths)
       marquee.removeEventListener("pointerenter", handlePointerEnter)
       marquee.removeEventListener("pointerleave", handlePointerLeave)
     }

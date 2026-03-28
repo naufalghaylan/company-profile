@@ -1,5 +1,4 @@
 import { useEffect } from "react"
-import AOS from "aos"
 import { Outlet, useLocation } from "react-router-dom"
 import Navbar from "./Navbar"
 import Footer from "./Footer"
@@ -24,7 +23,15 @@ function PageLayout() {
   }, [location.hash, location.pathname, location.search])
 
   useEffect(() => {
-    AOS.refreshHard()
+    const frameId = window.requestAnimationFrame(() => {
+      void import("aos").then(({ default: AOS }) => {
+        AOS.refresh()
+      })
+    })
+
+    return () => {
+      window.cancelAnimationFrame(frameId)
+    }
   }, [location.pathname])
 
   return (
