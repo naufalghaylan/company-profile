@@ -249,10 +249,10 @@ export default function TestimonialsSection() {
   }, [])
 
   return (
-    <section className={`${ds.section.base} bg-sky-50/60`}>
+    <section className={`${ds.section.base} bg-sky-50/60 `}>
       <Container>
         {/* Heading */}
-        <div className={ds.section.header}>
+        <div className={ds.section.header} data-aos="fade-up">
           <h2 className={ds.section.title}>
             What Our <span className="text-primary">Clients Say</span> 
           </h2>
@@ -262,7 +262,7 @@ export default function TestimonialsSection() {
         </div>
 
         {/* Mobile: swipe carousel */}
-        <div className="md:hidden">
+        <div className="md:hidden" data-aos="fade-up" data-aos-delay="80">
           <div
             ref={mobileScrollerRef}
             className="-mx-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
@@ -281,10 +281,15 @@ export default function TestimonialsSection() {
         </div>
 
         {/* Desktop: auto marquee */}
-        <div ref={marqueeRef} className="testimonials-marquee hidden space-y-6 overflow-hidden py-1 md:block
+        <div
+          ref={marqueeRef}
+          data-aos="fade-up"
+          data-aos-delay="100"
+          className="testimonials-marquee hidden space-y-6 overflow-hidden py-1 md:block
           mask-[linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]
           [-webkit-mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]
-        ">
+        "
+        >
           
           {/* Row 1 */}
           <div ref={rowLeftRef} className="testimonials-track">

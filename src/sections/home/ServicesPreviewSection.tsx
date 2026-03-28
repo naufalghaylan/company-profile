@@ -37,7 +37,7 @@ function ServicesPreviewSection() {
 		<section className={`${ds.section.base} relative w-full overflow-hidden border-t border-primary/10 bg-linear-to-br from-secondary/40 via-background to-background`}>
 			<Container>
 				{/* Header */}
-				<div className={ds.section.header}>
+				<div className={ds.section.header} data-aos="fade-up">
 					<h2 className={ds.section.title}>Our <span className="text-primary">Services</span></h2>
 
 					<p className={ds.section.description}>
@@ -48,12 +48,14 @@ function ServicesPreviewSection() {
 
 				{/* Grid */}
 				<div className={`mx-auto max-w-6xl ${ds.section.gridWide}`}>
-					{services.map((service) => (
-						<ServiceCard key={service.id} service={service} />
+					{services.map((service, index) => (
+						<div key={service.id} data-aos="fade-up" data-aos-delay={index * 90}>
+							<ServiceCard service={service} />
+						</div>
 					))}
 				</div>
 
-				<div className={ds.section.cta}>
+				<div className={ds.section.cta} data-aos="fade-up" data-aos-delay="120">
 					<Button asChild size="lg" className="px-6 shadow-lg shadow-primary/25 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/35">
 						<Link to="/services">Explore all services</Link>
 					</Button>

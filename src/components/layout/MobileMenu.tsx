@@ -2,6 +2,7 @@
 import { Menu } from "lucide-react"
 import { NavLink, Link } from "react-router-dom"
 import { navigation } from "@/app/navigations"
+import { useAuthStore } from "@/features/auth/store/authStore"
 
 import {
   Sheet,
@@ -13,6 +14,16 @@ import {
 import { Button } from "@/components/ui/button"
 
 export default function MobileMenu() {
+  const user = useAuthStore((state) => state.user)
+  const isLoading = useAuthStore((state) => state.isLoading)
+  const signOut = useAuthStore((state) => state.signOut)
+  const tagline = "Build with Clarity. Scale with Confidence."
+
+  const handleLogout = () => {
+    signOut()
+    window.location.assign("/")
+  }
+
   return (
     <div className="md:hidden">
 
@@ -43,9 +54,12 @@ export default function MobileMenu() {
                 T
               </div>
 
-              <span className="text-lg font-semibold">
-                TechFlow
-              </span>
+              <div className="leading-tight">
+                <span className="block text-lg font-semibold">TechFlow</span>
+                <span className="block text-[11px] text-muted-foreground">
+                  {tagline}
+                </span>
+              </div>
             </Link>
 
           </div>
@@ -76,15 +90,35 @@ export default function MobileMenu() {
           {/* Spacer */}
           <div className="flex-1" />
 
-          {/* CTA */}
-          <div className="p-6 border-t">
-
+          {/* CTA + Auth */}
+          <div className="p-6 border-t space-y-3">
             <SheetClose asChild>
-              <Button className="w-full rounded-full h-11 text-base">
-                Get Started
+              <Button asChild className="w-full rounded-full h-11 text-base">
+                <Link to="/services">Get Started</Link>
               </Button>
             </SheetClose>
 
+            {isLoading ? (
+              <Button variant="outline" className="w-full rounded-full h-11 text-base" disabled>
+                Loading...
+              </Button>
+            ) : user ? (
+              <SheetClose asChild>
+                <Button
+                  variant="outline"
+                  className="w-full rounded-full h-11 text-base"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </Button>
+              </SheetClose>
+            ) : (
+              <SheetClose asChild>
+                <Button asChild variant="outline" className="w-full rounded-full h-11 text-base">
+                  <Link to="/login">Login</Link>
+                </Button>
+              </SheetClose>
+            )}
           </div>
 
         </SheetContent>

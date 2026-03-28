@@ -1,9 +1,7 @@
+import BlogListSection from "@/sections/blog/BlogListSection"
+
 function BlogListPage() {
-  return (
-    <main>
-      <h1>Blog</h1>
-    </main>
-  )
+  return <BlogListSection />
 }
 
 export default BlogListPage

@@ -1,9 +1,7 @@
+import CreateBlogForm from "@/features/blog/components/CreateBlogForm"
+
 function CreateBlogPage() {
-  return (
-    <main>
-      <h1>Create Blog</h1>
-    </main>
-  )
+  return <CreateBlogForm />
 }
 
 export default CreateBlogPage

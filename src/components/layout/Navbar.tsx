@@ -5,10 +5,15 @@ import Container from "./Container"
 import { Button } from "@/components/ui/button"
 import MobileMenu from "./MobileMenu"
 import { useState, useEffect } from "react"
+import { useAuthStore } from "@/features/auth/store/authStore"
 
 export default function Navbar() {
 
   const [isScrolled, setIsScrolled] = useState(false)
+  const user = useAuthStore((state) => state.user)
+  const isLoading = useAuthStore((state) => state.isLoading)
+  const signOut = useAuthStore((state) => state.signOut)
+  const refreshUser = useAuthStore((state) => state.refreshUser)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,6 +24,19 @@ export default function Navbar() {
 
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
+  useEffect(() => {
+    refreshUser().catch(() => {
+      // refresh errors are handled in the auth store
+    })
+  }, [refreshUser])
+
+  const handleLogout = () => {
+    signOut()
+    window.location.assign("/")
+  }
+
+  const tagline = "Build with Clarity. Scale with Confidence."
 
   return (
     <header
@@ -38,9 +56,14 @@ export default function Navbar() {
               T
             </div>
 
-            <span className="text-lg font-semibold text-gray-900 transition-colors duration-200 group-hover:text-primary">
-              TechFlow
-            </span>
+            <div className="leading-tight">
+              <span className="block text-lg font-semibold text-gray-900 transition-colors duration-200 group-hover:text-primary">
+                TechFlow
+              </span>
+              <span className="hidden text-[11px] text-muted-foreground lg:block">
+                {tagline}
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
@@ -71,10 +94,28 @@ export default function Navbar() {
           {/* CTA + Mobile */}
           <div className="flex items-center gap-3">
 
-            <div className="hidden md:flex">
-              <Button className="rounded-full px-6 transition-transform duration-200 hover:scale-105">
-                Get Started
+            <div className="hidden md:flex items-center gap-2">
+              <Button asChild className="rounded-full px-6 transition-transform duration-200 hover:scale-105">
+                <Link to="/services">Get Started</Link>
               </Button>
+
+              {isLoading ? (
+                <Button variant="outline" className="rounded-full px-6" disabled>
+                  Loading...
+                </Button>
+              ) : user ? (
+                <Button
+                  variant="outline"
+                  className="rounded-full px-6"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </Button>
+              ) : (
+                <Button asChild variant="outline" className="rounded-full px-6">
+                  <Link to="/login">Login</Link>
+                </Button>
+              )}
             </div>
 
             <MobileMenu />

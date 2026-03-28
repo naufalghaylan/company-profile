@@ -15,17 +15,29 @@ function CTASection() {
 			/>
 
 			<Container>
-				<div className="relative z-10 mx-auto max-w-2xl text-center">
+				<div className="relative z-10 mx-auto max-w-2xl text-center" data-aos="fade-up">
 					<div className="space-y-6 md:space-y-8">
-						<h2 className="text-3xl font-bold tracking-[-0.02em] leading-tight md:text-5xl md:leading-[1.08]">
+						<h2
+							className="text-3xl font-bold tracking-[-0.02em] leading-tight md:text-5xl md:leading-[1.08]"
+							data-aos="fade-up"
+							data-aos-delay="80"
+						>
 							Ready to unlock your next stage of <span className="text-primary">business growth</span>?
 						</h2>
 
-						<p className="mx-auto max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg md:leading-relaxed">
+						<p
+							className="mx-auto max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg md:leading-relaxed"
+							data-aos="fade-up"
+							data-aos-delay="140"
+						>
 							Discover how we turn ideas into scalable digital solutions that drive real business growth.
 						</p>
 
-						<div className="flex flex-col items-center justify-center gap-3 pt-3 sm:flex-row sm:gap-4 md:pt-4">
+						<div
+							className="flex flex-col items-center justify-center gap-3 pt-3 sm:flex-row sm:gap-4 md:pt-4"
+							data-aos="fade-up"
+							data-aos-delay="200"
+						>
 							<Button
 								asChild
 								size="lg"

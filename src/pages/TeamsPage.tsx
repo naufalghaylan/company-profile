@@ -1,8 +1,13 @@
+import CTASection from "@/sections/home/CTASection"
+import TeamsPageSection from "@/sections/teams/TeamsPage"
+
 function TeamsPage() {
   return (
-    <main>
-      <h1>Our Team</h1>
-    </main>
+    <>
+      <TeamsPageSection />
+      <CTASection />
+    </>
+
   )
 }
 
