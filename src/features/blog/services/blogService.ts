@@ -1,4 +1,4 @@
-import type { Blog, CreateBlogInput } from "@/features/blog/types/blog.types"
+import type { Blog, CreateBlogInput, UpdateBlogInput } from "@/features/blog/types/blog.types"
 import Backendless from "@/lib/backendless/backendless.config"
 import { useAuthStore } from "@/features/auth/store/authStore"
 import { getBlogImage } from "@/features/blog/utils/blogImages"
@@ -31,6 +31,10 @@ type CreateBlogPayload = {
   summary: string
   authorName: string
   tags: string
+}
+
+type UpdateBlogPayload = CreateBlogPayload & {
+  objectId: string
 }
 
 const BLOG_TABLE = import.meta.env.VITE_BACKENDLESS_BLOG_TABLE || "BlogPosts"
@@ -194,6 +198,76 @@ export async function createBlog(input: CreateBlogInput): Promise<Blog> {
     }
 
     throw new Error("Failed to create blog in Backendless: unexpected error")
+  }
+}
+
+export async function updateBlog(id: string, input: UpdateBlogInput): Promise<Blog> {
+  const normalizedId = id.trim()
+  const normalizedTitle = input.title.trim()
+  const normalizedContent = input.content.trim()
+
+  if (!normalizedId) {
+    throw new Error("Blog ID is required.")
+  }
+
+  if (!normalizedTitle) {
+    throw new Error("Title is required.")
+  }
+
+  if (!normalizedContent) {
+    throw new Error("Content is required.")
+  }
+
+  const authUser = useAuthStore.getState().user
+  const derivedAuthorName = authUser?.name || authUser?.email?.split("@")[0]
+  const authorName = toAuthorName(derivedAuthorName)
+  const normalizedTags = parseTags(input.tags)
+
+  const payload: UpdateBlogPayload = {
+    objectId: normalizedId,
+    title: normalizedTitle,
+    content: normalizedContent,
+    summary: toSummary(normalizedContent),
+    authorName,
+    tags: normalizedTags.join(", "),
+  }
+
+  try {
+    const dataStore = Backendless.Data.of(BLOG_TABLE)
+    const updated = (await dataStore.save(payload)) as BackendlessBlog
+
+    return mapBlog(
+      {
+        ...updated,
+        ...payload,
+      },
+      0
+    )
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Failed to update blog in Backendless: ${error.message}`)
+    }
+
+    throw new Error("Failed to update blog in Backendless: unexpected error")
+  }
+}
+
+export async function deleteBlog(id: string): Promise<void> {
+  const normalizedId = id.trim()
+
+  if (!normalizedId) {
+    throw new Error("Blog ID is required.")
+  }
+
+  try {
+    const dataStore = Backendless.Data.of(BLOG_TABLE)
+    await dataStore.remove(normalizedId)
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Failed to delete blog in Backendless: ${error.message}`)
+    }
+
+    throw new Error("Failed to delete blog in Backendless: unexpected error")
   }
 }
 

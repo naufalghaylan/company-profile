@@ -53,7 +53,9 @@ export function AuthRouteGuard() {
     const from = `${location.pathname}${location.search}${location.hash}`
     const intentMessage = location.pathname === "/blog/create"
       ? "Log in to create blog post"
-      : "Log in to continue"
+      : location.pathname.startsWith("/blog/") && location.pathname.endsWith("/edit")
+        ? "Log in to edit blog post"
+        : "Log in to continue"
 
     return <Navigate to="/login" state={{ from, intentMessage }} replace />
   }

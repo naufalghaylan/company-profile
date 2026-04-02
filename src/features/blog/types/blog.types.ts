@@ -22,3 +22,9 @@ export type CreateBlogInput = {
 	tags?: string[]
 }
 
+export type UpdateBlogInput = {
+	title: string
+	content: string
+	tags?: string[]
+}
+

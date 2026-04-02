@@ -7,6 +7,7 @@ import TeamsPage from "@/pages/TeamsPage"
 import BlogListPage from "@/pages/BlogListPage"
 import BlogDetailPage from "@/pages/BlogDetailPage"
 import CreateBlogPage from "@/pages/CreateBlogPage"
+import EditBlogPage from "@/pages/EditBlogPage"
 import LoginPage from "@/pages/LoginPage"
 import { AuthRouteGuard, GuestRouteGuard } from "@/app/routeGuards"
 
@@ -46,6 +47,10 @@ export const router = createBrowserRouter([
           {
             path: "blog/create",
             element: <CreateBlogPage />
+          },
+          {
+            path: "blog/:id/edit",
+            element: <EditBlogPage />
           }
         ]
       },

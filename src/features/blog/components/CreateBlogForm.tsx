@@ -1,12 +1,19 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import Container from "@/components/layout/Container"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { createBlog } from "@/features/blog/services/blogService"
+import { createBlog, getBlogById, updateBlog } from "@/features/blog/services/blogService"
 import type { CreateBlogInput } from "@/features/blog/types/blog.types"
+
+type CreateBlogFormMode = "create" | "edit"
+
+type CreateBlogFormProps = {
+  mode?: CreateBlogFormMode
+  blogId?: string
+}
 
 type FormErrors = {
   title?: string
@@ -20,15 +27,17 @@ function parseTagInput(value: string): string[] {
     .filter(Boolean)
 }
 
-function CreateBlogForm() {
+function CreateBlogForm({ mode = "create", blogId }: CreateBlogFormProps) {
   const navigate = useNavigate()
 
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
   const [tagsInput, setTagsInput] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isLoadingInitialData, setIsLoadingInitialData] = useState(mode === "edit")
   const [error, setError] = useState<string | null>(null)
   const [formErrors, setFormErrors] = useState<FormErrors>({})
+  const isEditMode = mode === "edit"
 
   const validate = (values: { title: string; content: string }): FormErrors => {
     const nextErrors: FormErrors = {}
@@ -64,8 +73,14 @@ function CreateBlogForm() {
 
     try {
       setIsSubmitting(true)
-      await createBlog(payload)
-      navigate("/blog", { replace: true })
+
+      if (isEditMode && blogId) {
+        const updated = await updateBlog(blogId, payload)
+        navigate(`/blog/${updated.id}`, { replace: true })
+      } else {
+        await createBlog(payload)
+        navigate("/blog", { replace: true })
+      }
     } catch (submitError) {
       if (submitError instanceof Error) {
         setError(submitError.message)
@@ -77,19 +92,82 @@ function CreateBlogForm() {
     }
   }
 
+  useEffect(() => {
+    if (!isEditMode) {
+      setIsLoadingInitialData(false)
+      return
+    }
+
+    if (!blogId) {
+      setError("Blog ID not found.")
+      setIsLoadingInitialData(false)
+      return
+    }
+
+    let isMounted = true
+
+    const hydrateForm = async () => {
+      setError(null)
+      setIsLoadingInitialData(true)
+
+      try {
+        const blog = await getBlogById(blogId)
+        if (!isMounted) {
+          return
+        }
+
+        setTitle(blog.title)
+        setContent(blog.content || "")
+        setTagsInput((blog.tags || []).join(", "))
+      } catch (fetchError) {
+        if (!isMounted) {
+          return
+        }
+
+        if (fetchError instanceof Error) {
+          setError(fetchError.message)
+        } else {
+          setError("Failed to load blog data. Please try again.")
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoadingInitialData(false)
+        }
+      }
+    }
+
+    void hydrateForm()
+
+    return () => {
+      isMounted = false
+    }
+  }, [blogId, isEditMode])
+
   return (
     <main className="min-h-screen bg-linear-to-b from-sky-50 via-background to-background py-12 md:py-16">
       <Container>
         <div className="mx-auto max-w-2xl">
           <Card className="shadow-xl ring-1 ring-primary/15">
             <CardHeader>
-              <CardTitle className="text-2xl font-semibold">Create New Blog</CardTitle>
+              <CardTitle className="text-2xl font-semibold">
+                {isEditMode ? "Edit Blog" : "Create New Blog"}
+              </CardTitle>
               <CardDescription>
-                Share your insight with a concise title, useful content, and relevant tags.
+                {isEditMode
+                  ? "Update your blog content and tags before publishing your changes."
+                  : "Share your insight with a concise title, useful content, and relevant tags."}
               </CardDescription>
             </CardHeader>
 
             <CardContent>
+              {isLoadingInitialData ? (
+                <div className="space-y-4" aria-hidden>
+                  <div className="h-10 w-full animate-pulse rounded-md bg-muted" />
+                  <div className="h-44 w-full animate-pulse rounded-md bg-muted" />
+                  <div className="h-10 w-full animate-pulse rounded-md bg-muted" />
+                </div>
+              ) : null}
+
               <form className="space-y-4" onSubmit={handleSubmit} noValidate>
                 <div className="space-y-1.5">
                   <label htmlFor="title" className="text-sm font-medium text-foreground/90">
@@ -105,7 +183,7 @@ function CreateBlogForm() {
                     placeholder="Write a clear, punchy title"
                     maxLength={140}
                     aria-invalid={Boolean(formErrors.title)}
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || isLoadingInitialData}
                   />
                   {formErrors.title ? <p className="text-xs text-destructive">{formErrors.title}</p> : null}
                 </div>
@@ -124,7 +202,7 @@ function CreateBlogForm() {
                     placeholder="Write your blog content here..."
                     className="min-h-44"
                     aria-invalid={Boolean(formErrors.content)}
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || isLoadingInitialData}
                   />
                   {formErrors.content ? <p className="text-xs text-destructive">{formErrors.content}</p> : null}
                 </div>
@@ -140,7 +218,7 @@ function CreateBlogForm() {
                       setTagsInput(event.target.value)
                     }}
                     placeholder="contoh: react, frontend, backendless"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || isLoadingInitialData}
                   />
                   <p className="text-xs text-muted-foreground">Pisahkan setiap tag dengan koma.</p>
                 </div>
@@ -151,8 +229,14 @@ function CreateBlogForm() {
                   </p>
                 ) : null}
 
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
-                  {isSubmitting ? "Publishing..." : "Publish Blog"}
+                <Button type="submit" className="w-full" disabled={isSubmitting || isLoadingInitialData}>
+                  {isSubmitting
+                    ? isEditMode
+                      ? "Saving..."
+                      : "Publishing..."
+                    : isEditMode
+                      ? "Save Changes"
+                      : "Publish Blog"}
                 </Button>
               </form>
             </CardContent>
